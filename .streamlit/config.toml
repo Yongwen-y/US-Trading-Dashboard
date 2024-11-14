@@ -5,7 +5,7 @@ backgroundColor = "#111111"
 # secondaryBackgroundColor = "#154360"
 secondaryBackgroundColor = "#393939"
 textColor = "#fafafa"
-font = "sans serif"
+font = "Source Sans Pro"
 
 [server]
 enableStaticServing = true
