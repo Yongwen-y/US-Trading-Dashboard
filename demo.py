@@ -294,13 +294,15 @@ def show_page():
         st.write(f"### Key Insights")
         st.write(f'1. The US has a long-running overall trade deficity')
         st.write(f'2. Largest Importing Partner: China')
-        st.write(f'3. Largest Exporting Partner: Mexico & Canada)')
+        st.write(f'3. Largest Exporting Partner: Mexico & Canada')
         st.write('\n\n')
         st.write('\n\n')
         st.write('\n\n')
         with st.expander(f'# About:', expanded=False):
                 st.write(f'''
-                    - Data: [OEC](https://oec.world/en/resources/bulk-download/international)
-                    - :orange[**Trade Balance**]: Export - Import
-                    - :orange[**Data Displayed**]: Displaying data for {selected_type} value of USA on, in {selected_year}
-                    ''')
+                    - Source: [OEC](https://oec.world/en/resources/bulk-download/international)
+                    - :orange[**Data Displayed**]: Displaying data for {selected_type} value of USA in {selected_year}
+                    '''
+                    
+                    )
+                     
