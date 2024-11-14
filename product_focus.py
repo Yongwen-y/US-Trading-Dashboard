@@ -55,6 +55,10 @@ st.markdown("""
     transform: translateX(-50%);
 }
 
+body {
+    zoom: 80%; 
+}    
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -309,3 +313,13 @@ def show_page():
                     with cols[col_index]:
                         st.image(row['url'], caption=row['Sampled Products'])
                     count +=1
+            
+    with st.expander(f'#### About:', expanded=True):
+                st.write(f'''
+                    - Data: [OEC](https://oec.world/en/resources/bulk-download/international)
+                    - :orange[**Trade Balance**]: Export - Import
+                    - :orange[**Data Displayed**]: Displaying data for {selected_type} value of USA on {selected_product}, in {selected_year}
+                    ''')
+                
+
+   

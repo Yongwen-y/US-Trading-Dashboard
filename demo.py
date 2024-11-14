@@ -50,6 +50,10 @@ st.markdown("""
     -ms-transform: translateX(-50%);
     transform: translateX(-50%);
 }
+            
+body {
+    zoom: 80%; 
+}
 
 </style>
 """, unsafe_allow_html=True)
