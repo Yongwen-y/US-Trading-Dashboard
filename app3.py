@@ -4,8 +4,6 @@ import plotly.graph_objects as go
 import plotly.express as px
 
 # Load data
-usa_exports = pd.read_csv('exports_usa_with_hs2_name_with_HS1.csv')
-usa_imports = pd.read_csv('imports_usa_with_hs2_name_with_HS1.csv')
 trade_data1 = pd.read_csv('tab3data1.csv')
 
 def plot_import_export_stacked_and_lines_by_country(country):
@@ -61,40 +59,6 @@ def plot_import_export_stacked_and_lines_by_country(country):
     )
 
     return fig_stacked, fig_lines
-
-def create_treemap(data, title): # Tree Map by Broader Product Categories (Not used in the app)
-    grouped_data = data.groupby(['HS1 Name', 'HS2 Name'], as_index=False)['value'].sum()
-    yellow_to_red_palette = px.colors.sequential.YlOrRd
-
-    fig = px.treemap(
-        grouped_data,
-        path=[px.Constant(""), 'HS1 Name', 'HS2 Name'],
-        values='value',
-        color='value',
-        color_continuous_scale=[
-            "#FFFFFF",  # White
-            "#FFFFE0",  # Light Yellow
-            "#FFFF00",  # Yellow
-            "#FFA500",  # Orange
-            "#FF0000",  # Red
-            "#8B0000"   # Dark Red
-        ]
-    )
-
-    fig.update_traces(
-        textinfo="label",
-        texttemplate="<b>%{label}</b>",
-        textfont=dict(size=16),
-        insidetextfont=dict(color="black"),
-    )
-
-    fig.update_layout(
-        title=title,
-        title_font=dict(size=20),
-        coloraxis_showscale=True,
-    )
-
-    return fig
 
 def create_treemap_q(data, title, type): # Tree Map with Quantity (Not used in the app)
     color_scale = [
