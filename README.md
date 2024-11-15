@@ -17,7 +17,7 @@ Code Structure Outline:
  
 Data:
 
-There are 5 CSV files that contain the required data to run this dashboard. 
+There are 6 CSV files that contain the required data to run this dashboard. 
 All data were originially from https://oec.world/en/resources/bulk-download/international
 Each csv file were a cleaned up and processed version from the raw data found in the url above.
 
@@ -37,4 +37,6 @@ Each csv file were a cleaned up and processed version from the raw data found in
 - tab3data3.csv :
     - Shows Export and Import value for all countries in 2018, along with the product description
     - Column: year,country,hs2,export_value,export_quantity,import_value,import_quantity,Product Name
+- image_link.csv :
+    - Responsible for generating images of trade products shown in Product Focus tab
     
