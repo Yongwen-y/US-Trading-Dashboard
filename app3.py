@@ -60,7 +60,8 @@ def plot_import_export_stacked_and_lines_by_country(country):
 
     return fig_stacked, fig_lines
 
-def create_treemap_q(data, title, type): # Tree Map with Quantity (Not used in the app)
+def create_treemap_q(data, type): # Tree Map with Quantity (Not used in the app)
+    data = data.sort_values(by=type+'_value', ascending=False).head(10)
     color_scale = [
         [0, 'rgb(255, 215, 0)'],    # Gold (lower values)
         [0.2, 'rgb(255, 140, 0)'],  # Dark Orange
@@ -69,7 +70,6 @@ def create_treemap_q(data, title, type): # Tree Map with Quantity (Not used in t
         [1, 'rgb(128, 0, 0)']       # Dark Red (higher values)
     ]
     fig = px.treemap(data, path=['Product Name'], values=type + '_value',  # Size by volume
-                    title=title,
                     color=type + '_quantity', color_continuous_scale=color_scale,  # Color by trade value
                     hover_data={type + '_quantity': True, type + '_value': True})  # Show values on hover
     fig.update_traces(texttemplate='<b>%{label}</b>', textfont_size=14)
@@ -100,9 +100,11 @@ def show_page():
         fig_stacked, fig_lines = plot_import_export_stacked_and_lines_by_country(selected_country)
         tree_map_data_2022 = pd.read_csv('tab3data2.csv')
         tree_map_data_country_2022 = tree_map_data_2022[tree_map_data_2022['country'] == selected_country]
+        tree_map_data_country_2022= tree_map_data_country_2022.sort_values(by='export_value', ascending=False).head(10)
 
         tree_map_data_2018 = pd.read_csv('tab3data3.csv')
         tree_map_data_country_2018 = tree_map_data_2018[tree_map_data_2018['country'] == selected_country]
+        tree_map_data_country_2018 = tree_map_data_country_2018.sort_values(by='export_value', ascending=False).head(10)
 
         # Layout with 2 columns on top and 1 row at the bottom
         col1, col2 = st.columns(2)
@@ -114,23 +116,27 @@ def show_page():
 
         # Imports/Exports button above treemap
         
-        st.subheader(f"## Product Composition Comparison from 2018 to 2022")
+        st.markdown(f"## Product Composition Comparison from 2018 to 2022")
 
         col = st.columns([0.5,0.5], gap='small')
 
         with col[0]:
             if view_choice == "Exports":
-                tree_map_fig2018 = create_treemap_q(tree_map_data_country_2018, f"Exported Products Breakdown in 2018","export")
+                st.markdown(f"### Top 10 Exported Products in 2018")
+                tree_map_fig2018 = create_treemap_q(tree_map_data_country_2018,"export")
             else:
-                tree_map_fig2018 = create_treemap_q(tree_map_data_country_2018, f"Imported Products Breakdown in 2018","import")
+                st.markdown(f"### Top 10 Imported Products in 2018")
+                tree_map_fig2018 = create_treemap_q(tree_map_data_country_2018,"import")
             st.plotly_chart(tree_map_fig2018, use_container_width=True)
 
         with col[1]:
             # 2022
             if view_choice == "Exports":
-                tree_map_fig2022 = create_treemap_q(tree_map_data_country_2022, f"Exported Products Breakdown in 2022","export")
+                st.markdown(f"### Top 10 Exported Products in 2022")
+                tree_map_fig2022 = create_treemap_q(tree_map_data_country_2022,"export")
             else:
-                tree_map_fig2022 = create_treemap_q(tree_map_data_country_2022, f"Imported Products Breakdown in 2022","import")
+                st.markdown(f"### Top 10 Exported Products in 2022")
+                tree_map_fig2022 = create_treemap_q(tree_map_data_country_2022,"import")
             # Full-width treemap below with button control above
             st.plotly_chart(tree_map_fig2022, use_container_width=True)
 
