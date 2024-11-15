@@ -114,6 +114,8 @@ def show_page():
 
         # Imports/Exports button above treemap
         
+        st.subheader(f"## Product Composition Comparison from 2018 to 2022")
+
         col = st.columns([0.5,0.5], gap='small')
 
         with col[0]:
@@ -126,7 +128,7 @@ def show_page():
         with col[1]:
             # 2022
             if view_choice == "Exports":
-                tree_map_fig2022 = create_treemap_q(tree_map_data_country_2022, f"exported Products Breakdown in 2018","export")
+                tree_map_fig2022 = create_treemap_q(tree_map_data_country_2022, f"exported Products Breakdown in 2022","export")
             else:
                 tree_map_fig2022 = create_treemap_q(tree_map_data_country_2022, f"Imported Products Breakdown in 2022","import")
             # Full-width treemap below with button control above
