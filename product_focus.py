@@ -194,6 +194,7 @@ def show_page():
                     column_order=("partner", "formatted_value"),
                     hide_index=True,
                     width=None,
+                    use_container_width=True,
                     column_config={
                     "partner": st.column_config.TextColumn(
                         "Trade Partner",  
@@ -227,18 +228,18 @@ def show_page():
         fig.update_layout(
             yaxis=dict(showgrid=False, zeroline=False, showticklabels=False, title=''),  # Hide y-axis and title
             xaxis=dict(showgrid=False, zeroline=False, title='', tickfont=dict(size=18), title_standoff=20),
-            plot_bgcolor='rgba(0,0,0,0)',  # Transparent background
-            paper_bgcolor='rgba(0,0,0,0)',  # Transparent paper
-            bargap=0.05,  # Adjust bar gap to make bars connected
+            plot_bgcolor='rgba(0,0,0,0)',  
+            paper_bgcolor='rgba(0,0,0,0)',  
+            bargap=0.05,  
             coloraxis_showscale=False,
             margin=dict(t=0, b=10, l=10, r=10)
         )
 
         fig.update_traces(
             texttemplate='%{text:.1f} B USD', textposition='inside',
-            insidetextanchor='middle',  # Center text
+            insidetextanchor='middle',  
             marker_line_width=0,  
-            textfont=dict(size=18)  # Increase the font size of the text on top of the bars
+            textfont=dict(size=18)  
         )
         st.plotly_chart(fig, use_container_width=True)
     
@@ -248,10 +249,10 @@ def show_page():
         exp_data = df_exp[(df_exp['Product Type'] == selected_product)].groupby('year').agg({'value': 'sum'}).reset_index()
         imp_data = df_imp[(df_imp['Product Type'] == selected_product)].groupby('year').agg({'value': 'sum'}).reset_index()
 
-        # Create the line chart
+        
         fig_line = go.Figure()
 
-        # Add import data line
+        
         fig_line.add_trace(go.Scatter(
             x=imp_data['year'], y=imp_data['value'],
             mode='lines+markers',
@@ -261,7 +262,7 @@ def show_page():
             hovertemplate='<br><b>Import Value</b>: %{y}<extra></extra>'
         ))
 
-        # Add export data line
+        
         fig_line.add_trace(go.Scatter(
             x=exp_data['year'], y=exp_data['value'],
             mode='lines+markers',
@@ -270,7 +271,7 @@ def show_page():
             marker=dict(size=8)
         ))
 
-        # Update the layout for a modern appearance
+        
         fig_line.update_layout(
             yaxis=dict(showgrid=False, zeroline=False, showticklabels=True, title='', tickfont=dict(size=18)),  # Hide y-axis grid and title
             xaxis=dict(showgrid=False, zeroline=False, title='', tickfont=dict(size=18), title_standoff=20),
@@ -280,7 +281,7 @@ def show_page():
             legend=dict(orientation='h',font=dict(size=14), yanchor='bottom', y=-0.25, xanchor='center', x=0.5)  # Adjust legend font size and position  # Adjust legend font size
         )
 
-        # Shade the area between the lines
+        
         fig_line.add_trace(go.Scatter(
             x=exp_data['year'].tolist() + imp_data['year'].tolist()[::-1],
             y=exp_data['value'].tolist() + imp_data['value'].tolist()[::-1],
@@ -291,7 +292,7 @@ def show_page():
             showlegend=False
         ))
 
-        # Display the line chart
+        
         st.plotly_chart(fig_line, use_container_width=True)
 
         with col[2]:
@@ -308,13 +309,3 @@ def show_page():
                     with cols[col_index]:
                         st.image(row['url'], caption=row['Sampled Products'])
                     count +=1
-            
-    with st.expander(f'#### About:', expanded=True):
-                st.write(f'''
-                    - Data: [OEC](https://oec.world/en/resources/bulk-download/international)
-                    - :orange[**Trade Balance**]: Export - Import
-                    - :orange[**Data Displayed**]: Displaying data for {selected_type} value of USA on {selected_product}, in {selected_year}
-                    ''')
-                
-
-   

@@ -6,6 +6,26 @@ import plotly.express as px
 # Load data
 trade_data1 = pd.read_csv('tab3data1.csv')
 
+def wrap_text(text, width=20):
+    words = text.split()
+    lines = []
+    current_line = ""
+
+    for word in words:
+        if len(current_line) + len(word) + 1 <= width:
+            if current_line:
+                current_line += " " + word
+            else:
+                current_line = word
+        else:
+            lines.append(current_line)
+            current_line = word
+
+    if current_line:
+        lines.append(current_line)
+
+    return '<br>'.join(lines)
+
 def plot_import_export_stacked_and_lines_by_country(country):
     trade_data_select = trade_data1[trade_data1['importer_name'] == country]
 
@@ -24,11 +44,21 @@ def plot_import_export_stacked_and_lines_by_country(country):
         marker_color='lightyellow'
     ))
     fig_stacked.update_layout(
-        title=f"Total Imports and Exports between the United States and {country} Over Time",
-        xaxis=dict(title='Year'),
-        yaxis=dict(title='Trade Value (in USD)'),
-        barmode='stack'
+        xaxis=dict(title=''),
+        yaxis=dict(title='',showgrid=False),
+        barmode='stack',
+        legend=dict(
+            orientation="h",
+            x=0.5,
+            y=-0.1,
+            xanchor='center',
+            yanchor='top'
+        ),
+        height=500,
+        margin=dict(t=0, l=0, r=0, b=0), 
     )
+
+
 
     # Line plot
     fig_lines = go.Figure()
@@ -49,20 +79,33 @@ def plot_import_export_stacked_and_lines_by_country(country):
         fillcolor='rgba(139,0,0,0.2)',
     ))
     fig_lines.update_layout(
-        title=f"Imports and Exports Growth between the United States and {country} Over Time",
         xaxis=dict(
-            title='Year',
             tickvals=[2018, 2019, 2020, 2021, 2022],
             ticktext=['2018', '2019', '2020', '2021', '2022']
         ),
-        yaxis=dict(title='Trade Value (in USD)'),
+        yaxis=dict(title='',showgrid=False),
+        legend=dict(
+            orientation="h",
+            x=0.5,
+            y=-0.1,
+            xanchor='center',
+            yanchor='top'
+        ),
+        height=500,
+        margin=dict(t=0, l=0, r=0, b=0),
     )
 
     return fig_stacked, fig_lines
 
-def create_treemap_q(data, type): # Tree Map with Quantity (Not used in the app)
+def create_treemap_q(data, type): 
+    data[type + '_value'] = (data[type + '_value'] / 1e9).round(2)
+    data[type + '_quantity'] = (data[type + '_quantity'] / 1e6).round(2)
+
     data = data[data[type + '_value'] > 0]  # Filter out zero values
     data = data.sort_values(by=type+'_value', ascending=False).head(10)
+
+    data['Product Name'] = data['Product Name'].apply(lambda x: wrap_text(x, 20))
+    
     color_scale = [
         [0, 'rgb(255, 215, 0)'],    # Gold (lower values)
         [0.2, 'rgb(255, 140, 0)'],  # Dark Orange
@@ -72,17 +115,27 @@ def create_treemap_q(data, type): # Tree Map with Quantity (Not used in the app)
     ]
     fig = px.treemap(data, path=['Product Name'], values= type + '_value',  # Size by volume
                     color=type + '_quantity', color_continuous_scale=color_scale,  # Color by trade value
-                    hover_data={type + '_quantity': True, type + '_value': True})  # Show values on hover
-    fig.update_traces(texttemplate='<b>%{label}</b>', textfont_size=14)
+                    hover_data={type + '_quantity': ':.2f', type + '_value': ':.2f'})
+    fig.update_traces(texttemplate='<b>%{label}</b>', textfont_size=20,
+                      hovertemplate='<b>%{label}</b><br>Value: %{value:.1f} billion USD<br>Quantity: %{color:.2f} Millions Metric Tonnes')
     fig.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',  
         plot_bgcolor='rgba(0,0,0,0)',  
         font=dict(color='white'),  
         margin=dict(t=50, l=25, r=25, b=25), 
-        height=600, width=600
+        height=500, width=550,
+        dragmode='zoom', 
+        coloraxis_colorbar=dict(
+            title="Quantity",
+            orientation="h",  
+            x=0.5,  
+            y=-0.2,  
+            xanchor='center',
+            yanchor='bottom',
+        ),
     )
-    fig.update_layout(dragmode='zoom')  # Enable zoom feature
-    fig.update_traces(root_color="darkred")  # Darker root color for better contrast
+    fig.update_layout(dragmode='zoom', margin=dict(t=0, l=0, r=0, b=0),)  
+    fig.update_traces(root_color="darkred")  
 
     return fig
     
@@ -95,7 +148,7 @@ def show_page():
     selected_country = st.sidebar.selectbox("Select a Country", country_list, index=country_list.index("China"))
     view_choice = st.sidebar.radio("Select View:", ["Imports", "Exports"], horizontal=True)
 
-    st.title(f"US - {selected_country} Trade Dashboard") 
+    st.markdown(f"<h1 style='text-align: center;'>US - {selected_country} Trade Dashboard</h1>", unsafe_allow_html=True)
 
     fig_stacked, fig_lines = plot_import_export_stacked_and_lines_by_country(selected_country)
     tree_map_data_2022 = pd.read_csv('tab3data2.csv')
@@ -107,18 +160,17 @@ def show_page():
     tree_map_data_country_2018 = tree_map_data_country_2018.sort_values(by='export_value', ascending=False).head(10)
 
     # Layout with 2 columns on top and 1 row at the bottom
-    col1, col2 = st.columns(2)
+    col = st.columns([0.5,0.5], gap='medium')
 
-    with col1:
+    with col[0]:
+        st.markdown(f"#### Export/Import from 2018 to 2022")
         st.plotly_chart(fig_stacked, use_container_width=True)
-    with col2:
+    with col[1]:
+        st.markdown(f"#### Trade Balance from 2018 to 2022")
         st.plotly_chart(fig_lines, use_container_width=True)
-
-    # Imports/Exports button above treemap
     
     st.markdown(f"## Product Composition Comparison from 2018 to 2022")
-
-    col = st.columns([0.5,0.5], gap='small')
+    col = st.columns([0.5,0.5], gap='medium')
 
     with col[0]:
         if view_choice == "Exports":
@@ -138,6 +190,8 @@ def show_page():
             st.markdown(f"### Top 10 Exported Products in 2022")
             tree_map_fig2022 = create_treemap_q(tree_map_data_country_2022,"import")
         st.plotly_chart(tree_map_fig2022, use_container_width=True)
+
+    st.markdown("<p style='font-size:20px; font-style:italic; text-align:center; margin-top:0;'>*Size represents Trade Value in Billion USD, Color represents Quantity in Millions Metric Tonnes</p>", unsafe_allow_html=True)
 
 
 

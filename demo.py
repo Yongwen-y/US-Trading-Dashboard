@@ -206,6 +206,7 @@ def show_page():
                     column_order=("partner", "formatted_value"),
                     hide_index=True,
                     width=None,
+                    use_container_width=True,
                     column_config={
                     "partner": st.column_config.TextColumn(
                         "Trade Partner",  
@@ -219,34 +220,92 @@ def show_page():
                     )
     
     # SECOND ROW
-    col = st.columns([0.3, 0.5, 0.2], gap='medium')
+    col = st.columns([0.3,0.5,0.2], gap='medium')
     with col[0]:
-        data = {
-            "Category": ["Export", "Import", "Trade Balance"],
-            "Value": [filtered_data['value_export'].sum()/1e12, -filtered_data['value_import'].sum()/1e12, filtered_data['value_trade balance'].sum()/1e12]
-        }
-        df = pd.DataFrame(data)
-        color_scale = ['darkred', '#FF7F00', 'yellow', '#FFFFE0', '#FFFFFF']
+        historical = st.toggle("Display Trend Over Time", False)
+        if historical:
+            fig = go.Figure()
+            data_line = trade_data.groupby('year').agg({'value_export': 'sum', 'value_import': 'sum', 'value_trade balance': 'sum'}).reset_index()
+            data_line['value_trade balance'] = data_line['value_trade balance'] * -1
 
-        fig = px.bar(df, x="Category", y="Value", text="Value",
-                    color="Value", color_continuous_scale=color_scale)
+            # Add trace for Exports
+            fig.add_trace(
+                go.Scatter(
+                    x=data_line['year'],
+                    y=data_line['value_export'],
+                    mode='lines+markers',
+                    name='Exports',
+                    line=dict(color='white', width=2)
+                )
+            )
 
-        fig.update_layout(
-            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False, title=''),  
-            xaxis=dict(showgrid=False, zeroline=False, title='', tickfont=dict(size=18), title_standoff=20),
-            plot_bgcolor='rgba(0,0,0,0)',  
-            paper_bgcolor='rgba(0,0,0,0)', 
-            bargap=0.05,  
-            coloraxis_showscale=False 
-        )
+            # Add trace for Imports
+            fig.add_trace(
+                go.Scatter(
+                    x=data_line['year'],
+                    y=data_line['value_import'],
+                    mode='lines+markers',
+                    name='Imports',
+                    line=dict(color='red', width=2)
+                )
+            )
 
-        fig.update_traces(
-            texttemplate='%{text:.2} T USD', textposition='inside',
-            insidetextanchor='middle',  
-            marker_line_width=0,  
-            textfont=dict(size=18)  
-        )
-        st.plotly_chart(fig, use_container_width=True)
+            # Add trace for Deficit
+            fig.add_trace(
+                go.Scatter(
+                    x=data_line['year'],
+                    y=data_line['value_trade balance'],
+                    mode='lines+markers',
+                    name='Trade Deficit',
+                    line=dict(color='orange', width=2, dash='dash')
+                )
+            )
+            # Update layout for title and labels
+            fig.update_layout(
+                title='',
+                xaxis=dict(showgrid=False, title=''),
+                yaxis=dict(showgrid=False, title=''),
+                template='plotly_dark',
+                legend=dict(
+                orientation="v",
+                yanchor="top",
+                y=0.95,
+                xanchor="left",
+                x=0,
+                ),
+                margin=dict(t=0, l=0, r=0, b=0),
+            )
+
+            # Display the line chart in Streamlit
+            st.plotly_chart(fig, use_container_width=True)
+        else:
+            data = {
+                "Category": ["Export", "Import", "Trade Balance"],
+                "Value": [filtered_data['value_export'].sum()/1e12, -filtered_data['value_import'].sum()/1e12, filtered_data['value_trade balance'].sum()/1e12]
+            }
+            df = pd.DataFrame(data)
+            color_scale = ['darkred', '#FF7F00', 'yellow', '#FFFFE0', '#FFFFFF']
+
+            fig = px.bar(df, x="Category", y="Value", text="Value",
+                        color="Value", color_continuous_scale=color_scale)
+
+            fig.update_layout(
+                yaxis=dict(showgrid=False, zeroline=False, showticklabels=False, title=''),  
+                xaxis=dict(showgrid=False, zeroline=False, title='', tickfont=dict(size=18), title_standoff=20),
+                plot_bgcolor='rgba(0,0,0,0)',  
+                paper_bgcolor='rgba(0,0,0,0)',
+                bargap=0.05,  
+                coloraxis_showscale=False,
+                margin=dict(t=0, l=0, r=0, b=0),
+            )
+
+            fig.update_traces(
+                texttemplate='%{text:.2} T USD', textposition='inside',
+                insidetextanchor='middle',  
+                marker_line_width=0,  
+                textfont=dict(size=18),
+            )
+            st.plotly_chart(fig, use_container_width=True)
 
     with col[1]:
         top_products_exp = df_exp_filtered.groupby('Product Type').agg({'value': 'sum'}).reset_index()
@@ -278,6 +337,7 @@ def show_page():
             hovertemplate='<b>%{label}</b><br>Value: %{value:.1f} billion USD',
             texttemplate='%{label}<br>%{percentEntry:.2%}',
             marker=dict(line=dict(width=0)),
+            root_color='rgba(0,0,0,0)',
         )
 
         fig_treemap.update_layout(
@@ -285,24 +345,19 @@ def show_page():
             margin=dict(t=0, l=0, r=0, b=0),
             paper_bgcolor="rgba(0, 0, 0, 0)",
             plot_bgcolor="rgba(0, 0, 0, 0)",
-            height = 400,
+            height = 450,
             width = 550,
         )
         st.plotly_chart(fig_treemap, use_container_width=True)
 
     with col[2]:
-        st.write(f"### Key Insights")
-        st.write(f'1. The US has a long-running overall trade deficity')
-        st.write(f'2. Largest Importing Partner: China')
-        st.write(f'3. Largest Exporting Partner: Mexico & Canada')
-        st.write('\n\n')
-        st.write('\n\n')
-        st.write('\n\n')
-        with st.expander(f'# About:', expanded=False):
-                st.write(f'''
-                    - Source: [OEC](https://oec.world/en/resources/bulk-download/international)
-                    - :orange[**Data Displayed**]: Displaying data for {selected_type} value of USA in {selected_year}
-                    '''
-                    
-                    )
-                     
+        with st.expander(f'#### About:', expanded=True):
+            st.write(f'''
+                - :orange[**Source**]: [OEC](https://oec.world/en/resources/bulk-download/international)
+                - :orange[**Data Currently Displayed**]: {selected_type} value of USA in {selected_year}
+                - :orange[**Prepared by Plot Twist Group**]: A consulting group for the US Secretary of Commerce
+                '''
+                )
+                
+            
+                        
