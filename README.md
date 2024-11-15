@@ -22,10 +22,10 @@ Each csv file were a cleaned up and processed version from the raw data found in
 
 - exports_grouped.csv :
     - contains exports data with all countries (importer) from 2018 to 2022, grouped by HS2 level product category
-    - Columns: ,year,importer_name,hs2,value,quantity,hs_revision,Continent,Product Type
+    - Columns: year,importer_name,hs2,value,quantity,hs_revision,Continent,Product Type
 - import_grouped.csv :
     - Contains import data with all countries (exporter) from 2018 to 2022, grouped by HS2 level product category
-    - Columns: ,year,exporter_name,hs2,value,quantity,hs_revision,Continent,Product Type
+    - Columns: year,exporter_name,hs2,value,quantity,hs_revision,Continent,Product Type
 - tab3data1.csv : 
     - Shows total Export and Import value for all countries from 2018 to 2022
     - Columns: year,importer_name, export_value, exporter_name,import_value
