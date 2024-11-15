@@ -4,7 +4,7 @@ Dashboard that outlines US Export and Import data from 2018-2022
 App URL: https://usa-trade-dashboard-plot-twist-group.streamlit.app
 
 Code Structure Outline: 
-- Homepage.py : Run this first. This script is responsible for navigating between the 3 tabs on the dashboard
+- Homepage.py : Run this first. This script is responsible for launching the app and navigating between the 3 tabs on the dashboard
 - demo.py :
     - Script for Trade Overview Tab.
     - This tab contains import/export data between US and the rest of the world
