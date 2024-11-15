@@ -97,6 +97,7 @@ def show_page():
     st.title(f"US - {selected_country} Trade Dashboard") 
 
     if selected_country:
+        st.markdown(f"## test")
         fig_stacked, fig_lines = plot_import_export_stacked_and_lines_by_country(selected_country)
         tree_map_data_2022 = pd.read_csv('tab3data2.csv')
         tree_map_data_country_2022 = tree_map_data_2022[tree_map_data_2022['country'] == selected_country]
