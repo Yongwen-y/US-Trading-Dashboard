@@ -63,7 +63,6 @@ def plot_import_export_stacked_and_lines_by_country(country):
 def create_treemap_q(data, type): # Tree Map with Quantity (Not used in the app)
     data = data[data[type + '_value'] > 0]  # Filter out zero values
     data = data.sort_values(by=type+'_value', ascending=False).head(10)
-    st.dataframe(data)
     color_scale = [
         [0, 'rgb(255, 215, 0)'],    # Gold (lower values)
         [0.2, 'rgb(255, 140, 0)'],  # Dark Orange
