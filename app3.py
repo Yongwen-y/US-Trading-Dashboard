@@ -128,7 +128,7 @@ def show_page():
         with col[1]:
             # 2022
             if view_choice == "Exports":
-                tree_map_fig2022 = create_treemap_q(tree_map_data_country_2022, f"exported Products Breakdown in 2022","export")
+                tree_map_fig2022 = create_treemap_q(tree_map_data_country_2022, f"Exported Products Breakdown in 2022","export")
             else:
                 tree_map_fig2022 = create_treemap_q(tree_map_data_country_2022, f"Imported Products Breakdown in 2022","import")
             # Full-width treemap below with button control above
