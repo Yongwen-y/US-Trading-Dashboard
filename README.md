@@ -1,4 +1,4 @@
-# USA-Trade-Dashboard
+# USA Trade Dashboard
 Dashboard that outlines US Export and Import data from 2018-2022
 
 App URL: https://usa-trade-dashboard-plot-twist-group.streamlit.app
