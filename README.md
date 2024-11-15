@@ -16,10 +16,9 @@ Code Structure Outline:
     - In this tab user, user can select a specific country and see the specific trade relationship that the US has with the selected country.
  
 Data:
-
-- There are 6 CSV files that contain the required data to run this dashboard. 
-- All data were originially from https://oec.world/en/resources/bulk-download/international
-- Each csv file were a cleaned up and processed version from the raw data found in the url above.
+There are 6 CSV files that contain the required data to run this dashboard. \n
+All data were originially from https://oec.world/en/resources/bulk-download/international \n
+Each csv file were a cleaned up and processed version from the raw data found in the url above.
 
 - exports_grouped.csv :
     - contains exports data with all countries (importer) from 2018 to 2022, grouped by HS2 level product category
