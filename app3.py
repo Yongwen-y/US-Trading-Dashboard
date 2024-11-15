@@ -68,16 +68,17 @@ def create_treemap_q(data, title, type): # Tree Map with Quantity (Not used in t
         [0.8, 'rgb(178, 34, 34)'],  # Firebrick
         [1, 'rgb(128, 0, 0)']       # Dark Red (higher values)
     ]
-    fig = px.treemap(data, path=['Product Name'], values=type + '_quantity',  # Size by volume
+    fig = px.treemap(data, path=['Product Name'], values=type + '_value',  # Size by volume
                     title=title,
-                    color=type + '_value', color_continuous_scale=color_scale,  # Color by trade value
+                    color=type + '_quantity', color_continuous_scale=color_scale,  # Color by trade value
                     hover_data={type + '_quantity': True, type + '_value': True})  # Show values on hover
     fig.update_traces(texttemplate='<b>%{label}</b>', textfont_size=14)
     fig.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)',  # Transparent background
-        plot_bgcolor='rgba(0,0,0,0)',  # Transparent plot background
-        font=dict(color='white'),  # White font for dark theme
-        margin=dict(t=50, l=25, r=25, b=25)
+        paper_bgcolor='rgba(0,0,0,0)',  
+        plot_bgcolor='rgba(0,0,0,0)',  
+        font=dict(color='white'),  
+        margin=dict(t=50, l=25, r=25, b=25), 
+        height=600, width=600
     )
     fig.update_layout(dragmode='zoom')  # Enable zoom feature
     fig.update_traces(root_color="darkred")  # Darker root color for better contrast
@@ -91,14 +92,17 @@ def show_page():
 
     country_list = trade_data1['importer_name'].unique().tolist()
     selected_country = st.sidebar.selectbox("Select a Country", country_list, index=country_list.index("China"))
+    view_choice = st.sidebar.radio("Select View:", ["Imports", "Exports"], horizontal=True)
 
     st.title(f"US - {selected_country} Trade Dashboard") 
 
     if selected_country:
         fig_stacked, fig_lines = plot_import_export_stacked_and_lines_by_country(selected_country)
-        tree_map_data = pd.read_csv('tab3data2.csv')
-        tree_map_data['Trade Deficit'] = tree_map_data['import_value'] - tree_map_data['export_value']
-        tree_map_data_country = tree_map_data[tree_map_data['country'] == selected_country]
+        tree_map_data_2022 = pd.read_csv('tab3data2.csv')
+        tree_map_data_country_2022 = tree_map_data_2022[tree_map_data_2022['country'] == selected_country]
+
+        tree_map_data_2018 = pd.read_csv('tab3data3.csv')
+        tree_map_data_country_2018 = tree_map_data_2018[tree_map_data_2018['country'] == selected_country]
 
         # Layout with 2 columns on top and 1 row at the bottom
         col1, col2 = st.columns(2)
@@ -109,15 +113,30 @@ def show_page():
             st.plotly_chart(fig_lines, use_container_width=True)
 
         # Imports/Exports button above treemap
-        view_choice = st.radio("Select View:", ["Imports", "Exports"], horizontal=True)
-
         
+        col = st.columns([0.5,0.5], gap='small')
 
-        # Treemap selection based on Imports or Exports
-        if view_choice == "Exports":
-            tree_map_fig = create_treemap_q(tree_map_data_country, f"Treemap of Export with {selected_country} by HS Categories","export")
-        else:
-            tree_map_fig = create_treemap_q(tree_map_data_country, f"Treemap of Import with {selected_country} by HS Categories","import")
-        # Full-width treemap below with button control above
-        st.plotly_chart(tree_map_fig, use_container_width=True)
+        with col[0]:
+            if view_choice == "Exports":
+                tree_map_fig2018 = create_treemap_q(tree_map_data_country_2018, f"Exported Products Breakdown in 2018","export")
+            else:
+                tree_map_fig2018 = create_treemap_q(tree_map_data_country_2018, f"Imported Products Breakdown in 2018","import")
+            st.plotly_chart(tree_map_fig2018, use_container_width=True)
 
+        with col[1]:
+            # 2022
+            if view_choice == "Exports":
+                tree_map_fig2022 = create_treemap_q(tree_map_data_country_2022, f"exported Products Breakdown in 2018","export")
+            else:
+                tree_map_fig2022 = create_treemap_q(tree_map_data_country_2022, f"Imported Products Breakdown in 2022","import")
+            # Full-width treemap below with button control above
+            st.plotly_chart(tree_map_fig2022, use_container_width=True)
+
+
+
+
+
+
+
+
+            
