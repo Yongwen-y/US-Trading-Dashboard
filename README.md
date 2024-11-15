@@ -16,6 +16,7 @@ Code Structure Outline:
     - In this tab user, user can select a specific country and see the specific trade relationship that the US has with the selected country.
  
 Data:
+
 There are 5 CSV files that contain the required data to run this dashboard. 
 All data were originially from https://oec.world/en/resources/bulk-download/international
 Each csv file were a cleaned up and processed version from the raw data found in the url above.
